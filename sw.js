@@ -1,11 +1,11 @@
 // Service worker: app shell offline + notificaciones de recordatorios.
-const VERSION = 'theagent-v1';
+const VERSION = 'theagent-v2';
 const SHELL = [
   './', './index.html', './manifest.webmanifest',
   './css/app.css', './css/buddy.css',
   './js/app.js', './js/db.js', './js/util.js', './js/store.js', './js/ui.js',
   './js/buddy.js', './js/recorder.js', './js/pcm-worklet.js', './js/gemini.js',
-  './js/agent.js', './js/home.js', './js/reminders.js', './js/calendar-links.js',
+  './js/agent.js', './js/audit.js', './js/home.js', './js/reminders.js', './js/calendar-links.js',
   './js/views/notes.js', './js/views/calendar.js', './js/views/settings.js',
   './icons/icon-192.png', './icons/icon-512.png', './icons/icon-maskable-512.png',
 ];

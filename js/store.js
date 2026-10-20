@@ -18,6 +18,7 @@ export const DEFAULTS = {
   keys: [],                 // [{id,label,key,enabled,rpd,tpd,exhaustedUntil,invalid,lastError}]
   lastTurn: null,
   seeded: false,
+  auditIp: true,            // consultar IP y ubicación aproximada al abrir (ipapi.co)
 };
 
 let cache = null;

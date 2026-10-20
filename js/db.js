@@ -1,6 +1,6 @@
 // Envoltorio mínimo de IndexedDB.
 const DB_NAME = 'theagent';
-const DB_VERSION = 1;
+const DB_VERSION = 2;
 const STORES = {
   notes: { keyPath: 'id' },
   categories: { keyPath: 'id' },
@@ -8,6 +8,7 @@ const STORES = {
   queue: { keyPath: 'id' },
   actions: { keyPath: 'id' },
   lessons: { keyPath: 'id' },
+  sessions: { keyPath: 'id' },
   kv: {},
 };
 

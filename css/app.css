@@ -241,3 +241,6 @@ dialog::backdrop { background: rgba(10, 8, 20, .5); }
   background: var(--text); color: var(--bg); padding: 10px 16px; border-radius: 12px; font-size: 14px; transition: .25s; pointer-events: none; z-index: 20; max-width: 90vw;
 }
 #toast.show { opacity: 1; transform: translate(-50%, 0); }
+.audit-row { border: 1px solid var(--line); border-radius: 12px; padding: 10px; display: grid; gap: 4px; margin: 8px 0; }
+.audit-row.alert { border-color: var(--warn); background: color-mix(in srgb, var(--warn) 8%, transparent); }
+.audit-row .row.between { flex-wrap: wrap; }

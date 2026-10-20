@@ -6,6 +6,7 @@ import { initCalendar, render as renderCalendar } from './views/calendar.js';
 import { initSettings, render as renderSettings } from './views/settings.js';
 import { startReminders, beep } from './reminders.js';
 import { flushQueue } from './agent.js';
+import { startAudit } from './audit.js';
 
 const RENDER = { notes: renderNotes, calendar: renderCalendar, settings: renderSettings };
 let current = null;
@@ -23,6 +24,7 @@ function route() {
 
 async function main() {
   await loadSettings();
+  startAudit().catch(() => {});
   initHome();
   initNotes();
   initCalendar();

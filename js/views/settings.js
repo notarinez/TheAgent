@@ -6,6 +6,7 @@ import { Buddy, AVATARS, STYLES, ACTS } from '../buddy.js';
 import { newKey, maskKey, keyStatus, keyUsageToday, testKey, listModels, activeKey } from '../gemini.js';
 import { toast, confirmBox } from '../ui.js';
 import { askNotifications } from '../reminders.js';
+import { listSessions, currentSessionId } from '../audit.js';
 
 let root, preview;
 const avatarBuddies = {}, styleBuddies = {};
@@ -90,6 +91,15 @@ export function initSettings() {
       <button class="btn small ghost" id="s-clear-usage">Borrar historial de uso</button>
     </details>
 
+    <details class="card" id="s-audit-card">
+      <summary>🛡️ Auditoría de sesiones</summary>
+      <p class="muted small">Cada vez que se abre la app en <b>este dispositivo</b> se registra: dispositivo, navegador, IP, ubicación aproximada y tiempo de uso. Se marca en naranja si aparece una IP o un dispositivo nuevo. Otro móvil que abra tu web tiene su propio registro vacío y no ve tus notas ni tus claves.</p>
+      <div id="s-audit-sum"></div>
+      <label class="check"><input type="checkbox" id="s-audit-ip" ${s.auditIp ? 'checked' : ''}> Consultar IP y ubicación al abrir (servicio ipapi.co)</label>
+      <div id="s-audit"></div>
+      <button class="btn small ghost" id="s-audit-clear">Borrar registro</button>
+    </details>
+
     <details class="card">
       <summary>🗂️ Categorías</summary>
       <p class="muted small">La descripción es lo que el agente lee para decidir dónde va cada cosa. Cuanto más clara, mejor clasifica.</p>
@@ -128,7 +138,12 @@ export function initSettings() {
   setupCats();
   setupLearning();
   setupMisc();
+  $('#s-audit-ip').onchange = (e) => saveSettings({ auditIp: e.target.checked });
+  $('#s-audit-clear').onclick = async () => {
+    if (await confirmBox('¿Borrar el registro de sesiones?', 'Borrar')) { await clear('sessions'); renderAudit(); }
+  };
   bus.addEventListener('change', (e) => {
+    if (e.detail === 'sessions' && root.classList.contains('active') && $('#s-audit-card').open) renderAudit();
     if (e.detail === 'usage') renderUsage();
     if (e.detail === 'categories') renderCats();
   });
@@ -140,7 +155,8 @@ export function render() {
   renderKeys();
   renderCats();
   renderLessons();
-  const p = 'Notification' in window ? Notification.permission : 'unsupported';
+  renderAudit();
+  const p ='Notification' in window ? Notification.permission : 'unsupported';
   $('#s-notif-state').textContent = { granted: '✅ Notificaciones permitidas.', denied: '⛔ Bloqueadas: actívalas en los ajustes del navegador.', default: 'Aún no has dado permiso.', unsupported: 'Este navegador no soporta notificaciones.' }[p];
 }
 
@@ -360,6 +376,44 @@ async function renderUsage() {
       ${rows.map((d) => `<tr><td>${d.slice(5).split('-').reverse().join('/')}</td><td>${byDay[d].req}${byDay[d].err ? ` <span class="bad-text">(${byDay[d].err}✕)</span>` : ''}</td><td>${fmtNum(byDay[d].inTok)}</td><td>${fmtNum(byDay[d].outTok)}</td><td><b>${fmtNum(byDay[d].total)}</b></td></tr>`).join('')}
     </tbody></table>` : '<p class="muted small">Sin consumo todavía.</p>'}`;
   renderKeys();
+}
+
+// ---------------- Auditoría ----------------
+const fmtDur = (ms) => {
+  const m = Math.round(ms / 60000);
+  return m < 1 ? `${Math.max(1, Math.round(ms / 1000))} s` : m < 60 ? `${m} min` : `${Math.floor(m / 60)} h ${m % 60} min`;
+};
+
+async function renderAudit() {
+  const box = $('#s-audit');
+  if (!box) return;
+  const [sessions, usage] = await Promise.all([listSessions(), getAll('usage')]);
+  const cur = currentSessionId();
+  const dayAgo = Date.now() - 86400000, weekAgo = Date.now() - 7 * 86400000;
+  const active = (from) => sessions.filter((x) => x.lastSeen >= from).reduce((a, x) => a + x.activeMs, 0);
+  const ips = new Set(sessions.map((x) => x.ip).filter(Boolean));
+  const alerts = sessions.filter((x) => x.newIp || x.newDevice).length;
+  $('#s-audit-sum').innerHTML = `
+    <div class="stats">
+      <div class="stat"><span>Uso últimas 24 h</span><b>${fmtDur(active(dayAgo))}</b><small>tiempo con la app delante</small></div>
+      <div class="stat"><span>Uso 7 días</span><b>${fmtDur(active(weekAgo))}</b><small>${((n) => `${n} ${n === 1 ? 'sesión' : 'sesiones'}`)(sessions.filter((x) => x.start >= weekAgo).length)}</small></div>
+      <div class="stat"><span>IPs distintas</span><b>${ips.size}</b><small>en todo el registro</small></div>
+      <div class="stat"><span>Avisos</span><b class="${alerts ? 'bad-text' : ''}">${alerts}</b><small>IP o dispositivo nuevo</small></div>
+    </div>`;
+  box.innerHTML = sessions.length ? sessions.slice(0, 100).map((x) => {
+    const req = usage.filter((u) => u.ok && u.ts >= x.start && u.ts <= x.lastSeen + 60000);
+    const tok = req.reduce((a, u) => a + u.total, 0);
+    const where = [x.city, x.country].filter(Boolean).join(', ');
+    return `<div class="audit-row ${x.newIp || x.newDevice ? 'alert' : ''}">
+      <div class="row between">
+        <b>${new Date(x.start).toLocaleString('es-ES', { weekday: 'short', day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' })}</b>
+        ${x.id === cur ? '<span class="pill good">AHORA</span>' : ''}${x.newIp ? '<span class="pill warn">IP nueva</span>' : ''}${x.newDevice ? '<span class="pill warn">Dispositivo nuevo</span>' : ''}
+      </div>
+      <div class="small">📱 ${esc([x.model, x.os].filter(Boolean).join(' · '))} · ${esc(x.browser)} · ${x.installed ? 'app instalada' : 'navegador'} · ${esc(x.screen)}</div>
+      <div class="small">🌐 ${esc(x.ip || 'IP no disponible')}${where ? ` · ${esc(where)}` : ''}${x.org ? ` · ${esc(x.org)}` : ''}</div>
+      <div class="small muted">⏱️ ${fmtDur(x.activeMs)} activo de ${fmtDur(x.lastSeen - x.start)} · ${req.length} peticiones API${tok ? ` · ${fmtNum(tok)} tokens` : ''} · ${esc(x.lang)} · ${esc(x.tz)}</div>
+    </div>`;
+  }).join('') : '<p class="muted small">Sin sesiones registradas.</p>';
 }
 
 // ---------------- Categorías ----------------
