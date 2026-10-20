@@ -1,0 +1,302 @@
+/* ===================== Muñeco ===================== */
+.buddy {
+  width: min(74vw, 330px, 42vh);
+  height: auto;
+  overflow: visible;
+  --px: 0; --py: 0; --lvl: 0;
+  --body: #8f7bff; --body-l: #c3b8ff; --body-d: #5f48e0; --ink: #2a1d3a; --cheek: #ff8fb1;
+  -webkit-tap-highlight-color: transparent;
+  user-select: none;
+}
+.skin-robot { --body: #58c6d4; --body-l: #b5eef5; --body-d: #2c8f9d; --cheek: #ff9f7a; }
+.skin-ghost { --body: #eef0ff; --body-l: #ffffff; --body-d: #b8bde6; --cheek: #ffb3c7; }
+.skin-cat   { --body: #ffa75e; --body-l: #ffd3a8; --body-d: #d9772c; --cheek: #ff7f9a; }
+.skin-slime { --body: #7ed957; --body-l: #c6f5a8; --body-d: #4a9f2a; --cheek: #ff9fb0; }
+
+.buddy .g0 { stop-color: var(--body-l); }
+.buddy .g1 { stop-color: var(--body); }
+.buddy .g2 { stop-color: var(--body-d); }
+
+.buddy .shadow { fill: #000; opacity: .14; transform-box: fill-box; transform-origin: center; }
+.buddy .body {
+  stroke: var(--body-d); stroke-width: 2.5;
+  transition: d .7s cubic-bezier(.45, 1.45, .45, 1);
+}
+.buddy .belly { fill: #fff; opacity: .28; }
+.skin-robot .belly, .skin-ghost .belly { opacity: 0; }
+.buddy .robo-panel { opacity: 0; }
+.buddy .robo-panel rect { fill: var(--body-d); }
+.buddy .robo-panel circle { fill: #c8fbff; animation: led 1.2s infinite steps(1); }
+.buddy .robo-panel circle:nth-child(3) { animation-delay: .4s; }
+.buddy .robo-panel circle:nth-child(4) { animation-delay: .8s; }
+.skin-robot .robo-panel { opacity: 1; }
+@keyframes led { 50% { fill: #ff6b8a; } }
+
+.buddy .antenna { opacity: 0; }
+.skin-robot .antenna { opacity: 1; }
+.buddy .antenna path { stroke: var(--body-d); stroke-width: 4; stroke-linecap: round; }
+.buddy .antenna circle { fill: #ff6b8a; }
+.skin-robot.st-listening .antenna circle { animation: blinkled .4s infinite alternate; }
+@keyframes blinkled { to { fill: #ffe17a; } }
+
+.buddy .ear .ear-o { fill: var(--body); stroke: var(--body-d); stroke-width: 2.5; }
+.buddy .ear .ear-in { fill: var(--cheek); opacity: .7; }
+.skin-robot .ear .ear-o { fill: #9aa7b3; stroke: #5b6772; }
+.skin-robot .ear .ear-in { fill: #5b6772; opacity: 1; }
+.buddy .ear { transform-box: fill-box; transform-origin: center; transition: transform .12s; }
+
+.buddy .ew { fill: #fff; stroke: var(--ink); stroke-width: 1.5; transition: opacity .15s; }
+.buddy .pupil { fill: var(--ink); }
+.buddy .glint { fill: #fff; }
+.buddy .pupil, .buddy .glint {
+  transform: translate(calc(var(--px) * 1px), calc(var(--py) * 1px));
+  transition: transform .35s ease, opacity .15s;
+}
+.buddy .lid { fill: var(--body-d); transform-box: fill-box; transform-origin: 50% 0; transform: scaleY(0); transition: transform .12s; }
+.buddy .happy-eye { fill: none; stroke: var(--ink); stroke-width: 4; stroke-linecap: round; opacity: 0; }
+.buddy .eye { transform-box: fill-box; transform-origin: center; transition: transform .2s cubic-bezier(.4, 1.8, .5, 1); }
+
+.buddy .brow { fill: none; stroke: var(--ink); stroke-width: 4; stroke-linecap: round; transform-box: fill-box; transform-origin: center; transition: transform .25s, opacity .25s; }
+.buddy .cheek { fill: var(--cheek); opacity: .45; }
+.buddy .mouth {
+  fill: #3b1f3f; stroke: var(--ink); stroke-width: 1.5; stroke-linejoin: round;
+  d: path("M84 134 C92 143, 108 143, 116 134 C108 139, 92 139, 84 134 Z");
+  transition: d .22s ease;
+}
+.buddy .shades { opacity: 0; transform: translateY(-80px); transition: transform .5s cubic-bezier(.3, 1.4, .5, 1), opacity .3s; }
+.buddy .shades path { fill: #1a1a22; }
+.buddy .shades .bridge { fill: none; stroke: #1a1a22; stroke-width: 4; }
+.buddy .sweat { fill: #8fd3ff; opacity: 0; transition: opacity .3s; }
+
+.buddy .hand { transform-box: fill-box; transform-origin: center; transition: transform .45s cubic-bezier(.4, 1.5, .5, 1); }
+.buddy .hand circle { fill: var(--body); stroke: var(--body-d); stroke-width: 2.5; }
+
+.buddy .b-all { transform-box: view-box; transform-origin: 100px 130px; }
+.buddy .b-tilt { transform-box: view-box; transform-origin: 100px 190px; transition: transform .5s cubic-bezier(.4, 1.4, .5, 1); }
+.buddy .b-breath { transform-box: view-box; transform-origin: 100px 185px; animation: breath 3.2s ease-in-out infinite; }
+@keyframes breath { 50% { transform: scale(1.025, .975); } }
+
+/* ---------- efectos ---------- */
+.buddy .fx > * { opacity: 0; transition: opacity .3s; }
+.buddy .fx text { font: 800 22px system-ui, sans-serif; fill: var(--accent, #7b5cff); }
+.buddy .waves path { fill: none; stroke: var(--accent, #7b5cff); stroke-width: 3.5; stroke-linecap: round; animation: wave 1s ease-out infinite; }
+.buddy .waves path:nth-child(2) { animation-delay: .15s; }
+.buddy .waves path:nth-child(3) { animation-delay: .3s; }
+@keyframes wave { 0% { opacity: 0; } 30% { opacity: 1; } 100% { opacity: 0; } }
+.buddy .zzz text { animation: zfloat 2.4s ease-in-out infinite; }
+.buddy .zzz text:nth-child(2) { animation-delay: .4s; }
+.buddy .zzz text:nth-child(3) { animation-delay: .8s; }
+@keyframes zfloat { 0%, 100% { opacity: .2; transform: translateY(4px); } 50% { opacity: 1; transform: translateY(-4px); } }
+.buddy .dots circle { fill: var(--muted, #888); animation: dot 1.2s ease-in-out infinite; }
+.buddy .dots circle:nth-child(2) { animation-delay: .2s; }
+.buddy .dots circle:nth-child(3) { animation-delay: .4s; }
+@keyframes dot { 50% { transform: translateY(-5px); opacity: .5; } }
+.buddy .sparkles path { fill: #ffd84a; transform-box: fill-box; transform-origin: center; animation: twinkle .8s ease-in-out infinite alternate; }
+.buddy .sparkles path:nth-child(2) { animation-delay: .3s; }
+@keyframes twinkle { from { transform: scale(.5) rotate(0); } to { transform: scale(1.1) rotate(45deg); } }
+.buddy .achis { font-size: 26px !important; text-anchor: middle; }
+.buddy .qmark, .buddy .bang { font-size: 40px !important; }
+.buddy .notes text { animation: zfloat 1s ease-in-out infinite; }
+
+/* ===================== Estados ===================== */
+.buddy.blink .lid { transform: scaleY(1); }
+
+/* escuchando: mano a la oreja, oreja crece con el volumen, cabeza ladeada */
+.buddy.st-listening .b-tilt { transform: rotate(8deg); }
+.buddy.st-listening .ear-r { transform: scale(calc(1.3 + var(--lvl) * .7)); }
+.buddy.st-listening .hand-r { transform: translate(32px, -52px); }
+.buddy.st-listening .brow-r { transform: translateY(-5px) rotate(-8deg); }
+.buddy.st-listening .waves { opacity: calc(.25 + var(--lvl) * 1.5); }
+.buddy.st-listening .mouth { d: path("M95 137 C95 131, 105 131, 105 137 C105 143, 95 143, 95 137 Z"); }
+
+/* aburrido */
+.buddy.st-bored .lid { transform: scaleY(.5); }
+.buddy.st-bored .brow { transform: translateY(4px); }
+.buddy.st-bored .b-tilt { animation: sway 4.5s ease-in-out infinite; }
+.buddy.st-bored .hand-l { transform: translate(6px, 4px); }
+.buddy.st-bored .hand-r { transform: translate(-6px, 4px); }
+.buddy.st-bored .mouth { d: path("M86 138 C95 139, 105 139, 114 138 C105 141, 95 141, 86 138 Z"); }
+@keyframes sway { 0%, 100% { transform: rotate(-4deg); } 50% { transform: rotate(4deg); } }
+
+/* sorprendido */
+.buddy.st-surprised .eye { transform: scale(1.25); }
+.buddy.st-surprised .brow { transform: translateY(-11px); }
+.buddy.st-surprised .hand-l { transform: translate(-16px, -34px); }
+.buddy.st-surprised .hand-r { transform: translate(16px, -34px); }
+.buddy.st-surprised .bang { opacity: 1; }
+.buddy.st-surprised .b-all { animation: jump .5s; }
+.buddy.st-surprised .mouth { d: path("M90 139 C90 124, 110 124, 110 139 C110 154, 90 154, 90 139 Z"); }
+
+/* pensando */
+.buddy.st-thinking .b-tilt { transform: rotate(-5deg); }
+.buddy.st-thinking .brow-l { transform: translateY(-6px) rotate(-10deg); }
+.buddy.st-thinking .hand-r { transform: translate(-36px, -24px); }
+.buddy.st-thinking .dots { opacity: 1; }
+.buddy.st-thinking .mouth { d: path("M90 139 C98 137, 106 135, 113 132 C106 137, 98 139, 90 141 Z"); }
+
+/* contento */
+.buddy.st-happy .ew, .buddy.st-happy .pupil, .buddy.st-happy .glint { opacity: 0; }
+.buddy.st-happy .happy-eye { opacity: 1; }
+.buddy.st-happy .hand-l { transform: translate(-10px, -56px); }
+.buddy.st-happy .hand-r { transform: translate(10px, -56px); }
+.buddy.st-happy .sparkles { opacity: 1; }
+.buddy.st-happy .b-all { animation: jump .6s 2; }
+.buddy.st-happy .cheek { opacity: .8; }
+.buddy.st-happy .mouth { d: path("M78 130 C88 153, 112 153, 122 130 C110 137, 90 137, 78 130 Z"); }
+
+/* confundido / error */
+.buddy.st-confused .b-tilt { transform: rotate(-10deg); }
+.buddy.st-confused .brow-l { transform: rotate(14deg); }
+.buddy.st-confused .brow-r { transform: translateY(-6px) rotate(-12deg); }
+.buddy.st-confused .qmark { opacity: 1; }
+.buddy.st-confused .sweat { opacity: 1; }
+.buddy.st-confused .hand-r { transform: translate(6px, -70px); }
+.buddy.st-confused .mouth { d: path("M86 139 C94 133, 104 145, 114 136 C104 147, 94 135, 86 141 Z"); }
+
+/* durmiendo */
+.buddy.st-sleeping .lid { transform: scaleY(1); }
+.buddy.st-sleeping .brow { opacity: 0; }
+.buddy.st-sleeping .zzz { opacity: 1; }
+.buddy.st-sleeping .b-breath { animation-duration: 5s; }
+.buddy.st-sleeping .b-tilt { transform: rotate(-6deg); }
+.buddy.st-sleeping .mouth { d: path("M95 138 C95 135, 105 135, 105 138 C105 141, 95 141, 95 138 Z"); }
+
+/* apagado (sin micro) */
+.buddy.st-off { filter: saturate(.55); }
+.buddy.st-off .lid { transform: scaleY(.3); }
+
+/* hablando (TTS) */
+.buddy.talking .mouth { animation: talk .26s infinite alternate; }
+@keyframes talk {
+  from { d: path("M88 135 C94 141, 106 141, 112 135 C106 137, 94 137, 88 135 Z"); }
+  to { d: path("M90 136 C90 126, 110 126, 110 136 C110 150, 90 150, 90 136 Z"); }
+}
+
+/* ===================== Gestos ===================== */
+@keyframes jump { 0%, 100% { transform: translateY(0); } 40% { transform: translateY(-22px) scale(.97, 1.04); } 75% { transform: translateY(0) scale(1.05, .95); } }
+
+.buddy.act-jump .b-all { animation: jump .65s; }
+.buddy.act-spin .b-all { animation: spin 1.1s cubic-bezier(.6, 0, .3, 1); }
+@keyframes spin { 0% { transform: rotate(0); } 30% { transform: translateY(-20px) rotate(120deg); } 100% { transform: rotate(360deg); } }
+
+.buddy.act-hide .b-all { transform-origin: 100px 200px; animation: hide 1.9s cubic-bezier(.5, 0, .3, 1); }
+@keyframes hide { 0% { transform: none; } 25%, 55% { transform: scale(1.1, 0); } 75% { transform: scale(.9, 1.2) translateY(-20px); } 100% { transform: none; } }
+
+.buddy.act-sneeze .b-all { animation: sneeze 1.5s; }
+.buddy.act-sneeze .achis { opacity: 1; transition-delay: .7s; }
+.buddy.act-sneeze .lid { transform: scaleY(1); }
+.buddy.act-sneeze .mouth { d: path("M90 136 C90 126, 110 126, 110 136 C110 150, 90 150, 90 136 Z"); }
+@keyframes sneeze { 0% { transform: none; } 45% { transform: scale(1.06, .92) rotate(-6deg); } 55% { transform: scale(.9, 1.12) translateY(-10px) rotate(4deg); } 70%, 100% { transform: none; } }
+
+.buddy.act-dance .b-all { animation: dance 2.4s ease-in-out; }
+.buddy.act-dance .notes { opacity: 1; }
+.buddy.act-dance .hand-l { transform: translate(-12px, -48px); }
+.buddy.act-dance .hand-r { transform: translate(12px, -48px); }
+@keyframes dance { 0%, 100% { transform: none; } 12.5%, 62.5% { transform: rotate(-12deg) translateY(-8px); } 37.5%, 87.5% { transform: rotate(12deg) translateY(-8px); } 25%, 50%, 75% { transform: none; } }
+
+.buddy.act-shades .shades { opacity: 1; transform: none; }
+.buddy.act-shades .mouth { d: path("M90 136 C98 140, 108 138, 116 130 C108 136, 98 138, 90 136 Z"); }
+.buddy.act-shades .hand-r { transform: translate(-8px, -40px); }
+
+.buddy.act-yawn .mouth { d: path("M88 137 C88 118, 112 118, 112 137 C112 158, 88 158, 88 137 Z"); transition-duration: .6s; }
+.buddy.act-yawn .lid { transform: scaleY(.8); }
+.buddy.act-yawn .hand-r { transform: translate(-40px, -18px); }
+
+.buddy.act-shiver .b-all { animation: shiver .1s linear 12; }
+.buddy.act-shiver .mouth { d: path("M86 138 C90 134, 94 142, 100 138 C106 134, 110 142, 114 138 Z"); }
+@keyframes shiver { 0%, 100% { transform: translateX(0); } 50% { transform: translateX(3px); } }
+
+.buddy.act-shapeshift .b-all { animation: jump .6s 3; }
+
+/* ===================== Gestos propios de cada avatar ===================== */
+/* Gominola / Slime: rebote elástico */
+.buddy.act-bounce .b-all { transform-origin: 100px 200px; animation: bounce 1.4s cubic-bezier(.3, 1.6, .5, 1); }
+@keyframes bounce {
+  0%, 100% { transform: none; } 15% { transform: scale(1.18, .78); } 35% { transform: translateY(-34px) scale(.88, 1.14); }
+  55% { transform: scale(1.12, .86); } 72% { transform: translateY(-12px) scale(.95, 1.05); } 85% { transform: scale(1.04, .96); }
+}
+.buddy.act-bounce .mouth { d: path("M80 131 C88 150, 112 150, 120 131 C110 137, 90 137, 80 131 Z"); }
+
+/* Robotín: escáner y fallo de sistema */
+.buddy .scanline { opacity: 0; }
+.buddy.act-scan .pupil { fill: #ff3b5c; }
+.buddy.act-scan .glint { opacity: 0; }
+.buddy.act-scan .b-tilt { animation: scanhead 1.8s ease-in-out; }
+@keyframes scanhead { 25% { transform: rotate(-9deg); } 75% { transform: rotate(9deg); } }
+.buddy.act-scan .antenna circle { animation: blinkled .15s infinite alternate; }
+.buddy.act-glitch .b-all { animation: glitch 1.1s steps(2, end); }
+.buddy.act-glitch .body { stroke: #ff3b5c; }
+.buddy.act-glitch .mouth { d: path("M86 136 L96 140 L104 134 L114 139 L104 141 L96 137 Z"); }
+@keyframes glitch {
+  0%, 100% { transform: none; filter: none; } 10% { transform: translateX(-6px) skewX(8deg); filter: hue-rotate(90deg); }
+  20% { transform: translateX(5px); } 35% { transform: translate(-3px, 2px) skewX(-10deg); filter: hue-rotate(200deg) saturate(2); }
+  50% { transform: none; filter: none; } 65% { transform: translateX(7px) scaleY(.9); filter: invert(1); } 80% { transform: translateX(-2px); }
+}
+
+/* Fantasmín: se desvanece y asusta */
+.buddy.act-fade .b-all { animation: fade 2.6s ease-in-out; }
+@keyframes fade { 0%, 100% { opacity: 1; transform: none; } 35%, 60% { opacity: .12; transform: translateY(-14px); } }
+.buddy.act-boo .b-all { animation: boo 1.3s cubic-bezier(.3, 1.8, .5, 1); }
+@keyframes boo { 0%, 100% { transform: none; } 30%, 70% { transform: scale(1.22) translateY(-6px); } }
+.buddy.act-boo .hand-l { transform: translate(-14px, -60px); }
+.buddy.act-boo .hand-r { transform: translate(14px, -60px); }
+.buddy.act-boo .brow { transform: translateY(6px) rotate(10deg); }
+.buddy.act-boo .mouth { d: path("M84 136 C84 120, 116 120, 116 136 C116 158, 84 158, 84 136 Z"); }
+.skin-ghost .b-breath { animation: float 3.4s ease-in-out infinite; }
+.skin-ghost .shadow { animation: shadowfloat 3.4s ease-in-out infinite; }
+@keyframes float { 50% { transform: translateY(-8px); } }
+@keyframes shadowfloat { 50% { transform: scale(.85); opacity: .08; } }
+
+/* Michi: se lame la pata */
+.buddy.act-groom .hand-r { animation: groom 2.4s ease-in-out; }
+@keyframes groom { 0%, 100% { transform: none; } 20%, 80% { transform: translate(-44px, -34px); } 30%, 50%, 70% { transform: translate(-44px, -40px) rotate(20deg); } 40%, 60% { transform: translate(-44px, -30px); } }
+.buddy.act-groom .lid { transform: scaleY(.85); }
+.buddy.act-groom .mouth { d: path("M94 136 C94 142, 106 142, 106 136 C104 150, 96 150, 94 136 Z"); }
+.buddy.act-groom .b-tilt { transform: rotate(-8deg); }
+
+/* Slime: se derrite y se recompone */
+.buddy.act-melt .b-all { transform-origin: 100px 200px; animation: melt 2.6s ease-in-out; }
+@keyframes melt { 0%, 100% { transform: none; } 40%, 60% { transform: scale(1.35, .5); } 80% { transform: scale(.92, 1.1); } }
+.buddy.act-melt .lid { transform: scaleY(.6); }
+.buddy.act-melt .mouth { d: path("M86 140 C94 144, 106 136, 114 140 C106 146, 94 148, 86 140 Z"); }
+
+/* ===================== Estilos visuales ===================== */
+.buddy.style-flat .body { fill: var(--body); stroke: none; }
+.buddy.style-flat .ear .ear-o, .buddy.style-flat .hand circle { stroke: none; }
+.buddy.style-flat .ew { stroke: none; }
+.buddy.style-flat .belly { opacity: .18; }
+
+.buddy.style-clay .body { stroke: none; }
+.buddy.style-clay .hand circle, .buddy.style-clay .ear .ear-o { stroke: none; }
+.buddy.style-clay .shadow { opacity: .25; }
+
+.buddy.style-sketch .body { fill: #fbf7ec; stroke: #3a3530; stroke-width: 3; }
+.buddy.style-sketch .ear .ear-o, .buddy.style-sketch .hand circle { fill: #fbf7ec; stroke: #3a3530; stroke-width: 3; }
+.buddy.style-sketch .ear .ear-in, .buddy.style-sketch .cheek { fill: var(--body); opacity: .5; }
+.buddy.style-sketch .belly { fill: var(--body); opacity: .25; }
+.buddy.style-sketch .lid { fill: #e8e1cf; }
+.buddy.style-sketch .ew { stroke: #3a3530; stroke-width: 2.5; }
+
+.buddy.style-ink { --ink: #111; }
+.buddy.style-ink .body, .buddy.style-ink .ear .ear-o, .buddy.style-ink .hand circle { fill: #fff; stroke: #111; stroke-width: 5; }
+.buddy.style-ink .ear .ear-in, .buddy.style-ink .cheek { fill: #111; opacity: .15; }
+.buddy.style-ink .belly { opacity: 0; }
+.buddy.style-ink .lid { fill: #d8d8d8; }
+.buddy.style-ink .ew { stroke-width: 3; }
+.buddy.style-ink .mouth { fill: #111; }
+.buddy.style-ink .shadow { opacity: .3; }
+
+.buddy.style-neon { --ink: var(--body-l); }
+.buddy.style-neon .body, .buddy.style-neon .ear .ear-o, .buddy.style-neon .hand circle { fill: none; stroke: var(--body); stroke-width: 3.5; }
+.buddy.style-neon .ear .ear-in, .buddy.style-neon .belly, .buddy.style-neon .robo-panel rect { fill: none; opacity: 0; }
+.buddy.style-neon .cheek { fill: none; stroke: var(--cheek); stroke-width: 2; opacity: .8; }
+.buddy.style-neon .ew { fill: none; stroke: var(--body-l); stroke-width: 2.5; }
+.buddy.style-neon .pupil { fill: var(--body-l); }
+.buddy.style-neon .glint { opacity: 0; }
+.buddy.style-neon .lid { fill: var(--bg, #0d0c14); }
+.buddy.style-neon .mouth { fill: none; stroke: var(--body-l); stroke-width: 2.5; }
+.buddy.style-neon .brow, .buddy.style-neon .happy-eye { stroke: var(--body-l); }
+.buddy.style-neon .shadow { fill: var(--body); opacity: .25; }
+
+.buddy.style-pastel { filter: saturate(.55) brightness(1.12); }
+.buddy.style-pastel .body { stroke-width: 1.5; stroke-opacity: .5; }
